@@ -191,7 +191,6 @@ const NotificationSettings = ({
                           <SelectItem value="whatsapp">WhatsApp</SelectItem>
                           <SelectItem value="sms">SMS</SelectItem>
                           <SelectItem value="email">Email</SelectItem>
-                          <SelectItem value="app">In-App Message</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormDescription>

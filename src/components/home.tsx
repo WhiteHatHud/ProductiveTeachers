@@ -365,26 +365,6 @@ const Home = () => {
               </CardContent>
             </Card>
           </TabsContent>
-
-          {/* Messages Tab - Only visible to teachers and admins */}
-          {(isTeacherUser || isAdminUser) && (
-            <TabsContent value="messages">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <MessageSquare className="h-5 w-5" />
-                    Parent Communication
-                  </CardTitle>
-                  <CardDescription>
-                    Draft and send messages to parents about student attendance
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <MessageDrafting />
-                </CardContent>
-              </Card>
-            </TabsContent>
-          )}
         </Tabs>
       </main>
     </div>

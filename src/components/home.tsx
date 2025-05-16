@@ -314,6 +314,8 @@ const Home = () => {
             <div className="mb-6">
               <SchoolClassSelector
                 onSelectionChange={(schoolId, classId) => {
+                  console.log("Selected School ID:", schoolId);
+                  console.log("Selected Class ID:", classId);
                   setSelectedSchoolId(schoolId);
                   setSelectedClassId(classId);
                 }}

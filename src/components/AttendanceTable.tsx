@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { createClient } from "@supabase/supabase-js";
 import {
   Table,
   TableBody,
@@ -28,6 +27,10 @@ import {
   Loader2,
 } from "lucide-react";
 
+import { supabase } from "@/lib/supabaseClient";
+import { set } from "date-fns";
+
+
 interface Student {
   id: string;
   name: string;
@@ -50,16 +53,56 @@ interface AttendanceTableProps {
 }
 
 const AttendanceTable = ({
-  students = defaultStudents,
+  students,
   date = new Date(),
   classId = null,
   schoolId = null,
   onStatusChange = () => {},
   onSave = () => {},
 }: AttendanceTableProps) => {
-  const [attendanceData, setAttendanceData] = useState<Student[]>(students);
+  const [attendanceData, setAttendanceData] = useState<Student[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [errorMap, setErrorMap] = useState<Map<string, string> | null>(null);
+
+
+useEffect(() => {
+    const fetchAttendance = async () => {
+      setLoading(true);
+      setErrorMap(null);
+
+      const { data, error } = await supabase
+      .from("students")
+      .select(`
+        id,
+        student_name,
+        attendance (
+          status,
+          date
+        )
+      `)
+        .eq("class_id", classId)
+        .eq("school_id", schoolId)
+      if(error) {
+        setError("Failed to load attendance data. Please try again.");
+        setLoading(false);
+        return;
+      }
+      const mapped = data.map((student) => ({
+        id: student.id,
+        name: student.student_name,
+        status: student.attendance?.[0]?.status || "absent",
+        absenceCount: 0,
+        consecutiveAbsences: 0,
+        lastAttendance: student.attendance?.[0]?.date || "N/A",
+      }));
+      setAttendanceData(mapped);
+      setLoading(false);
+    };
+    if(classId && schoolId) {
+      fetchAttendance();
+    }
+  }, [classId, schoolId]);
 
   const handleStatusChange = (
     studentId: string,
@@ -250,48 +293,5 @@ const AttendanceTable = ({
   );
 };
 
-// Default mock data
-const defaultStudents: Student[] = [
-  {
-    id: "S001",
-    name: "John Smith",
-    status: "present",
-    absenceCount: 2,
-    consecutiveAbsences: 0,
-    lastAttendance: "May 15, 2023",
-  },
-  {
-    id: "S002",
-    name: "Emily Johnson",
-    status: "absent",
-    absenceCount: 5,
-    consecutiveAbsences: 2,
-    lastAttendance: "May 8, 2023",
-  },
-  {
-    id: "S003",
-    name: "Michael Brown",
-    status: "late",
-    absenceCount: 1,
-    consecutiveAbsences: 0,
-    lastAttendance: "May 15, 2023",
-  },
-  {
-    id: "S004",
-    name: "Sarah Davis",
-    status: "absent",
-    absenceCount: 8,
-    consecutiveAbsences: 4,
-    lastAttendance: "May 1, 2023",
-  },
-  {
-    id: "S005",
-    name: "David Wilson",
-    status: "present",
-    absenceCount: 0,
-    consecutiveAbsences: 0,
-    lastAttendance: "May 15, 2023",
-  },
-];
 
 export default AttendanceTable;

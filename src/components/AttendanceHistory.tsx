@@ -246,24 +246,32 @@ const AttendanceHistory = ({
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {absencePatterns.map((pattern) => (
-                      <TableRow key={pattern.studentId}>
-                        <TableCell>{pattern.studentName}</TableCell>
-                        <TableCell>{pattern.studentId}</TableCell>
-                        <TableCell>
-                          <Badge
-                            variant={
-                              pattern.consecutiveAbsences >= 4
-                                ? "destructive"
-                                : "default"
-                            }
-                          >
-                            {pattern.consecutiveAbsences}
-                          </Badge>
+                    {absencePatterns.length > 0 ? (
+                      absencePatterns.map((pattern) => (
+                        <TableRow key={pattern.studentId}>
+                          <TableCell>{pattern.studentName}</TableCell>
+                          <TableCell>{pattern.studentId}</TableCell>
+                          <TableCell>
+                            <Badge
+                              variant={
+                                pattern.consecutiveAbsences >= 4
+                                  ? "destructive"
+                                  : "default"
+                              }
+                            >
+                              {pattern.consecutiveAbsences}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>{pattern.lastAbsentDate}</TableCell>
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={4} className="text-center py-6">
+                          No absence patterns found
                         </TableCell>
-                        <TableCell>{pattern.lastAbsentDate}</TableCell>
                       </TableRow>
-                    ))}
+                    )}
                   </TableBody>
                 </Table>
               </CardContent>

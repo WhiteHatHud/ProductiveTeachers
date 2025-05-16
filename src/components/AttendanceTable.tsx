@@ -24,6 +24,7 @@ import {
   Check,
   X,
   AlertTriangle,
+  Loader2,
 } from "lucide-react";
 
 interface Student {
@@ -52,6 +53,9 @@ const AttendanceTable = ({
   onSave = () => {},
 }: AttendanceTableProps) => {
   const [attendanceData, setAttendanceData] = useState<Student[]>(students);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  const [classId, setClassId] = useState<string | null>(null);
 
   const handleStatusChange = (
     studentId: string,
@@ -133,91 +137,110 @@ const AttendanceTable = ({
         </div>
       </CardHeader>
       <CardContent>
-        <div className="rounded-md border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-[50px]">ID</TableHead>
-                <TableHead>Student Name</TableHead>
-                <TableHead className="w-[150px]">Status</TableHead>
-                <TableHead className="w-[120px]">Present</TableHead>
-                <TableHead className="w-[120px]">Absent</TableHead>
-                <TableHead className="w-[120px]">Late</TableHead>
-                <TableHead className="w-[180px]">Last Attendance</TableHead>
-                <TableHead className="w-[100px]">Absences</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {attendanceData.map((student) => (
-                <TableRow key={student.id}>
-                  <TableCell className="font-medium">{student.id}</TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      {student.name}
-                      {getAbsenceIndicator(student.consecutiveAbsences)}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge className={getStatusColor(student.status)}>
-                      {student.status.charAt(0).toUpperCase() +
-                        student.status.slice(1)}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center">
-                      <Switch
-                        checked={student.status === "present"}
-                        onCheckedChange={() =>
-                          handleStatusChange(student.id, "present")
-                        }
-                      />
-                      <Check
-                        className={`ml-2 h-4 w-4 ${student.status === "present" ? "text-green-500" : "text-gray-300"}`}
-                      />
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center">
-                      <Switch
-                        checked={student.status === "absent"}
-                        onCheckedChange={() =>
-                          handleStatusChange(student.id, "absent")
-                        }
-                      />
-                      <X
-                        className={`ml-2 h-4 w-4 ${student.status === "absent" ? "text-red-500" : "text-gray-300"}`}
-                      />
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center">
-                      <Switch
-                        checked={student.status === "late"}
-                        onCheckedChange={() =>
-                          handleStatusChange(student.id, "late")
-                        }
-                      />
-                      <Clock
-                        className={`ml-2 h-4 w-4 ${student.status === "late" ? "text-yellow-500" : "text-gray-300"}`}
-                      />
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-sm text-gray-600">
-                    {student.lastAttendance}
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className="font-mono">
-                      {student.absenceCount}
-                    </Badge>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-        <div className="mt-4 flex justify-end">
-          <Button onClick={onSave}>Save Attendance</Button>
-        </div>
+        {loading ? (
+          <div className="flex justify-center items-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <span className="ml-2">Loading attendance data...</span>
+          </div>
+        ) : error ? (
+          <div className="text-red-500 text-center py-8">{error}</div>
+        ) : attendanceData.length === 0 ? (
+          <div className="text-center py-8 text-gray-500">
+            {classId
+              ? "No students found in this class."
+              : "Please select a class to view attendance."}
+          </div>
+        ) : (
+          <>
+            <div className="rounded-md border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[50px]">ID</TableHead>
+                    <TableHead>Student Name</TableHead>
+                    <TableHead className="w-[150px]">Status</TableHead>
+                    <TableHead className="w-[120px]">Present</TableHead>
+                    <TableHead className="w-[120px]">Absent</TableHead>
+                    <TableHead className="w-[120px]">Late</TableHead>
+                    <TableHead className="w-[180px]">Last Attendance</TableHead>
+                    <TableHead className="w-[100px]">Absences</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {attendanceData.map((student) => (
+                    <TableRow key={student.id}>
+                      <TableCell className="font-medium">
+                        {student.id}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          {student.name}
+                          {getAbsenceIndicator(student.consecutiveAbsences)}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge className={getStatusColor(student.status)}>
+                          {student.status.charAt(0).toUpperCase() +
+                            student.status.slice(1)}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center">
+                          <Switch
+                            checked={student.status === "present"}
+                            onCheckedChange={() =>
+                              handleStatusChange(student.id, "present")
+                            }
+                          />
+                          <Check
+                            className={`ml-2 h-4 w-4 ${student.status === "present" ? "text-green-500" : "text-gray-300"}`}
+                          />
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center">
+                          <Switch
+                            checked={student.status === "absent"}
+                            onCheckedChange={() =>
+                              handleStatusChange(student.id, "absent")
+                            }
+                          />
+                          <X
+                            className={`ml-2 h-4 w-4 ${student.status === "absent" ? "text-red-500" : "text-gray-300"}`}
+                          />
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center">
+                          <Switch
+                            checked={student.status === "late"}
+                            onCheckedChange={() =>
+                              handleStatusChange(student.id, "late")
+                            }
+                          />
+                          <Clock
+                            className={`ml-2 h-4 w-4 ${student.status === "late" ? "text-yellow-500" : "text-gray-300"}`}
+                          />
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-sm text-gray-600">
+                        {student.lastAttendance}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className="font-mono">
+                          {student.absenceCount}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+            <div className="mt-4 flex justify-end">
+              <Button onClick={onSave}>Save Attendance</Button>
+            </div>
+          </>
+        )}
       </CardContent>
     </Card>
   );

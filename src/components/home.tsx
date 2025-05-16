@@ -343,7 +343,10 @@ const Home = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <AttendanceHistory />
+                <AttendanceHistory
+                  schoolId={selectedSchoolId}
+                  classId={selectedClassId}
+                />
               </CardContent>
             </Card>
           </TabsContent>

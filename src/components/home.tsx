@@ -302,6 +302,16 @@ const Home = () => {
               </Card>
             </div>
 
+            {/* School and Class Selector */}
+            <div className="mb-6">
+              <SchoolClassSelector
+                onSelectionChange={(schoolId, classId) => {
+                  setSelectedSchoolId(schoolId);
+                  setSelectedClassId(classId);
+                }}
+              />
+            </div>
+
             {/* Attendance Table */}
             <Card>
               <CardHeader>
@@ -325,7 +335,7 @@ const Home = () => {
                 </div>
               </CardHeader>
               <CardContent>
-                <AttendanceTable />
+                <AttendanceTable date={currentDate} classId={selectedClassId} />
               </CardContent>
             </Card>
           </TabsContent>

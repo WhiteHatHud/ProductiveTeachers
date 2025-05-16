@@ -35,6 +35,7 @@ import AttendanceHistory from "./AttendanceHistory";
 import NotificationSettings from "./NotificationSettings";
 import { getCurrentUser, logout, isAdmin } from "@/lib/auth";
 import { Link } from "react-router-dom";
+import SchoolClassSelector from "./SchoolClassSelector";
 
 const Home = () => {
   const [activeTab, setActiveTab] = React.useState("dashboard");
@@ -50,6 +51,13 @@ const Home = () => {
     setUser(currentUser);
     setIsAdminUser(isAdmin());
   }, []);
+
+
+  // Declare missing states
+  const [selectedSchoolId, setSelectedSchoolId] = useState<string | null>(null);
+  const [selectedClassId, setSelectedClassId] = useState<string | null>(null);
+  const [currentDate, setCurrentDate] = useState(new Date());
+
 
   // Mock data for attendance summary
   const attendanceSummary = {
@@ -352,15 +360,15 @@ const Home = () => {
                   View and analyze past attendance records
                 </CardDescription>
               </CardHeader>
-              <CardContent>
+                <CardContent>
                 <AttendanceHistory
                   schoolId={selectedSchoolId}
                   classId={selectedClassId}
                 />
-              </CardContent>
+                </CardContent>
             </Card>
           </TabsContent>
-
+        
           {/* Settings Tab */}
           <TabsContent value="settings">
             <Card>

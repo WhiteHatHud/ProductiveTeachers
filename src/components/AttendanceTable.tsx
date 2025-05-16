@@ -40,9 +40,11 @@ interface Student {
 interface AttendanceTableProps {
   students?: Student[];
   date?: Date;
+  classId?: string | null;
+  schoolId?: string | null;
   onStatusChange?: (
     studentId: string,
-    status: "present" | "absent" | "late",
+    status: "present" | "absent" | "late"
   ) => void;
   onSave?: () => void;
 }
@@ -50,13 +52,14 @@ interface AttendanceTableProps {
 const AttendanceTable = ({
   students = defaultStudents,
   date = new Date(),
+  classId = null,
+  schoolId = null,
   onStatusChange = () => {},
   onSave = () => {},
 }: AttendanceTableProps) => {
   const [attendanceData, setAttendanceData] = useState<Student[]>(students);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [classId, setClassId] = useState<string | null>(null);
 
   const handleStatusChange = (
     studentId: string,

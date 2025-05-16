@@ -37,11 +37,18 @@ interface AttendanceRecord {
 
 interface AttendanceHistoryProps {
   records?: AttendanceRecord[];
-  onFilterChange?: (filters: any) => void;
+  schoolId?: string | null;
+  classId?: string | null;
+  onFilterChange?: (filters:{
+    studentId?: string;
+    status?: string;
+  }) => void;
 }
 
 const AttendanceHistory = ({
   records = defaultRecords,
+  schoolId = null,
+  classId = null,
   onFilterChange,
 }: AttendanceHistoryProps) => {
   const [activeTab, setActiveTab] = useState("records");
